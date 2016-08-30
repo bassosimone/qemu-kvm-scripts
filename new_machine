@@ -1,0 +1,19 @@
+#!/bin/sh
+set -e
+if [ $# -ne 1 ]; then
+    echo "usage: $0 machine-name" 1>&2
+    exit 1
+fi
+OFILE=/var/local/qemu-kvm/etc/$1
+if [ -f $OFILE ]; then
+    echo "fatal: machine $1 already exists" 1>&2
+    exit 1
+fi
+echo "NIC_MODEL=user"   >> $OFILE
+echo "#BRIDGE=br0"      >> $OFILE
+echo "#DRIVE_IF=virtio" >> $OFILE
+echo "DRIVE_IF=sd"      >> $OFILE
+echo "MAC=auto"         >> $OFILE
+echo "MEMORY=4g"        >> $OFILE
+echo "#VGA=virtio"      >> $OFILE
+echo "VGA=std"          >> $OFILE
