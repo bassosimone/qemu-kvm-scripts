@@ -10,3 +10,4 @@ install:
 	install -vd $(PREFIX)/jail
 	install -vd $(PREFIX)/iso
 	install -vd $(PREFIX)/disk
+	install -vd $(PREFIX)/etc
