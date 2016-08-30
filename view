@@ -1,4 +1,8 @@
 #!/bin/sh
 # Public domain, 2013 Simone Basso <bassosimone@gmail.com>
-# This command is provided, e.g., by tigervnc
-vncviewer -preferredencoding tight -compresslevel 9 -qualitylevel 1 -lowcolorlevel 0 $@
+
+if [ $# -ne 1 ]; then
+    echo "usage: $0 display" 1>&2
+    exit 1
+fi
+vinagre 127.0.0.1:$1
