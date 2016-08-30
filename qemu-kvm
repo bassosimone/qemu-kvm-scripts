@@ -48,14 +48,14 @@ MAC=$(echo $1.varanasy.polito.it | md5sum | \
   sed 's/^\(..\)\(..\)\(..\)\(..\)\(..\).*$/02:\1:\2:\3:\4:\5/')
 
 # XXX I don't remove the iptables rules
-/usr/bin/sudo /usr/bin/qemu-system-x86_64				\
-    -enable-kvm								\
-    -drive file=$prefix/disk/$1.raw,index=0,media=disk,if=$DRIVE_IF	\
-    -m $MEMORY								\
-    -net nic,model=$NIC_MODEL,macaddr=$MAC				\
-    -net tap,script=$prefix/bin/ifup.$BRIDGE				\
-    -vga $VGA								\
-    -daemonize								\
-    -chroot $prefix/jail						\
-    -runas nobody							\
+/usr/bin/sudo /usr/bin/qemu-system-x86_64                               \
+    -enable-kvm                                                         \
+    -drive file=$prefix/disk/$1.raw,index=0,media=disk,if=$DRIVE_IF     \
+    -m $MEMORY                                                          \
+    -net nic,model=$NIC_MODEL,macaddr=$MAC                              \
+    -net tap,script=$prefix/bin/ifup.$BRIDGE                            \
+    -vga $VGA                                                           \
+    -daemonize                                                          \
+    -chroot $prefix/jail                                                \
+    -runas nobody                                                       \
     $OPTIONS
