@@ -14,6 +14,6 @@ echo "#BRIDGE=br0"      >> $OFILE
 echo "#DRIVE_IF=virtio" >> $OFILE
 echo "DRIVE_IF=sd"      >> $OFILE
 echo "MAC=auto"         >> $OFILE
-echo "MEMORY=4g"        >> $OFILE
+echo "MEMORY=4G"        >> $OFILE
 echo "#VGA=virtio"      >> $OFILE
 echo "VGA=std"          >> $OFILE
