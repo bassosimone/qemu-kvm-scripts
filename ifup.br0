@@ -1,0 +1,4 @@
+#!/bin/sh
+# Public domain 2012 Simone Basso <bassosimone@gmail.com>
+/sbin/ifconfig $1 0.0.0.0 promisc up
+/sbin/brctl addif br0 $1

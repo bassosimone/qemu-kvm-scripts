@@ -1,0 +1,61 @@
+#!/bin/sh
+# Public domain, 2012-2014 Simone Basso <bassosimone@gmail.com>
+
+OPTIONS=""
+USAGE="usage: qemu-kvm [-bs] [-d display] [-i cdrom] machine"
+
+ARGS=$(getopt bd:i:s $*)
+if [ $? -ne 0 ]; then
+    echo $USAGE 1>&2
+    exit 1
+fi
+set -- $ARGS
+while [ $# -gt 0 ]; do
+    OPT=$1
+    shift
+    if [ "$OPT" = "-b" ]; then
+        OPTIONS="$OPTIONS -display none"
+    elif [ "$OPT" = "-d" ]; then
+        OPTIONS="$OPTIONS -vnc 127.0.0.1:$1,lossy -usbdevice tablet"
+        shift
+    elif [ "$OPT" = "-i" ]; then
+        OPTIONS="$OPTIONS -cdrom $1"
+        shift
+    elif [ "$OPT" = "-s" ]; then
+        OPTIONS="$OPTIONS -snapshot"
+    elif [ "$OPT" = "--" ]; then
+        break
+    else
+        echo "FATAL: option parsing error" 1>&2
+        exit 1
+    fi
+done
+if [ $# -ne 1 ]; then
+    echo $USAGE 1>&2
+    exit 1
+fi
+
+prefix=/var/local/qemu-kvm
+
+if [ ! -r $prefix/etc/$1 ]; then
+    echo "FATAL: machine not configured" 1>&2
+    exit 1
+fi
+
+. $prefix/etc/$1
+
+MAC=$(echo $1.varanasy.polito.it | md5sum | \
+  sed 's/^\(..\)\(..\)\(..\)\(..\)\(..\).*$/02:\1:\2:\3:\4:\5/')
+
+# XXX I don't remove the iptables rules
+/usr/bin/sudo /usr/bin/qemu-system-x86_64				\
+    -enable-kvm								\
+    -drive file=$prefix/disk/$1.raw,index=0,media=disk,if=$DRIVE_IF	\
+    -m $MEMORY								\
+    -net nic,model=$NIC_MODEL,macaddr=$MAC				\
+    -net tap,script=$prefix/bin/ifup.$BRIDGE				\
+    -vga $VGA								\
+    -daemonize								\
+    -chroot $prefix/jail						\
+    -runas nobody							\
+    $OPTIONS

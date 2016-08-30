@@ -1,0 +1,3 @@
+#!/bin/sh
+# Public domain, 2013 Simone Basso <bassosimone@gmail.com>
+vncviewer -encodings tight -compresslevel 9 -quality 1 -depth 8 $@

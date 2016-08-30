@@ -1,0 +1,11 @@
+#!/bin/sh
+# Public domain 2012-2013 Simone Basso <bassosimone@gmail.com>
+
+/sbin/ifconfig $1 0.0.0.0 promisc up
+/sbin/brctl addif br1 $1
+
+/sbin/iptables -t nat -L POSTROUTING -v|grep -q $1
+if [ $? -ne 0 ]; then
+    /sbin/iptables -t nat -A POSTROUTING -m physdev \
+        --physdev-in=$1 -s 10.0.0.0/8 -j SNAT --to-source 130.192.91.231
+fi

@@ -1,0 +1,45 @@
+#!/bin/sh -e
+# The following is my setup recycled from the Slackware box:
+
+#
+# This is the first bridge; it is a transparent bridge with a public
+# address, and is used for public machines.
+#
+
+echo "Create br0: /sbin/brctl addbr br0"
+/sbin/brctl addbr br0
+
+echo "Set br0 address: /sbin/ifconfig br0 130.192.91.231 ..."
+/sbin/ifconfig br0 130.192.91.231 netmask 255.255.255.192 up
+
+echo "Bring eth0 up: /sbin/ifconfig eth0 up"
+/sbin/ifconfig eth0 up
+
+echo "Add eth0 to br0: /sbin/brctl addif br0 eth0"
+/sbin/brctl addif br0 eth0
+
+echo "Add default gw: /sbin/route add default gw 130.192.91.254"
+/sbin/route add default gw 130.192.91.254
+
+#
+# This is the second bridge; it has a private address, so you need
+# to enable SNAT in the POSTROUTING chain to access the Internet.
+#
+
+echo "Setup IP forwarding: /proc/sys/net/ipv4/ip_forward"
+echo 1 > /proc/sys/net/ipv4/ip_forward
+
+echo "Create br1: /sbin/brctl addbr br1"
+/sbin/brctl addbr br1
+
+echo "Set br1 address: /sbin/ifconfig br1 10.0.0.1 ..."
+/sbin/ifconfig br1 10.0.0.1 netmask 255.0.0.0 up
+
+#
+# Finally run the mirkwood virtual machine
+#
+
+echo "Starting mirkwood: /var/local/qemu-kvm/bin/qemu-kvm -b mirkwood"
+/var/local/qemu-kvm/bin/qemu-kvm -b mirkwood
+
+exit 0
