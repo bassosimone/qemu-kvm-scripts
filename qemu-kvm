@@ -3,15 +3,29 @@
 
 prefix=/var/local/qemu-kvm
 
+DAEMONIZE="yes"
 ECHO=""
-OPTIONS="-enable-kvm -runas nobody -daemonize -chroot $prefix/jail"
+OPTIONS="-enable-kvm -runas nobody -chroot $prefix/jail"
 QEMU=`which qemu-system-x86_64`
 SUDO=`which sudo`
-USAGE="usage: qemu-kvm [-bns] [-d display] [-i cdrom] machine"
 
-ARGS=$(getopt bd:i:ns $*)
+usage() {
+    cat << EOF
+usage: qemu-kvm [-bfns] [-d display] [-i cdrom] machine
+
+    -b          : do not use any display
+    -d display  : specify display number to be used with view
+    -f          : foreground mode (i.e. don't daemonize)
+    -i cdrom    : specify path to cdrom file
+    -n          : dry run
+    -s          : snapshot mode
+
+EOF
+}
+
+ARGS=$(getopt bd:fi:ns $*)
 if [ $? -ne 0 ]; then
-    echo $USAGE 1>&2
+    usage 1>&2
     exit 1
 fi
 set -- $ARGS
@@ -23,6 +37,8 @@ while [ $# -gt 0 ]; do
     elif [ "$OPT" = "-d" ]; then
         OPTIONS="$OPTIONS -vnc 127.0.0.1:$1,lossy -usbdevice tablet"
         shift
+    elif [ "$OPT" = "-f" ]; then
+        DAEMONIZE=""
     elif [ "$OPT" = "-i" ]; then
         OPTIONS="$OPTIONS -cdrom $1"
         shift
@@ -34,13 +50,13 @@ while [ $# -gt 0 ]; do
         break
     else
         echo "FATAL: option parsing error" 1>&2
-        echo $USAGE 1>&2
+        usage 1>&2
         exit 1
     fi
 done
 if [ $# -ne 1 ]; then
     echo "FATAL: missing machine name"
-    echo $USAGE 1>&2
+    usage 1>&2
     exit 1
 fi
 
@@ -65,6 +81,9 @@ fi
 OPTIONS="-drive file=$prefix/disk/$1.raw,index=0,media=disk,if=$DRIVE_IF $OPTIONS"
 OPTIONS="-m $MEMORY $OPTIONS"
 OPTIONS="-vga $VGA $OPTIONS"
+if [ "$DAEMONIZE" = "yes" ]; then
+    OPTIONS="$OPTIONS -daemonize"
+fi
 
 # XXX I don't remove the iptables rules
 $ECHO $SUDO $QEMU $OPTIONS
