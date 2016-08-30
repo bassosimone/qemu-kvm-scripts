@@ -1,4 +1,4 @@
 #!/bin/sh
 # Public domain, 2013-2014 Simone Basso <bassosimone@gmail.com>
 [ $# -eq 0 ] && { echo "usage: $0 disk" 1>&2; exit 1; }
-/usr/bin/qemu-img create /var/local/qemu-kvm/disk/$1.raw 30G
+/usr/bin/qemu-img create /var/local/qemu-kvm/disk/$1.raw 100G
