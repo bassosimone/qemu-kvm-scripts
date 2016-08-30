@@ -12,7 +12,7 @@ fi
 echo "NIC_MODEL=user"   >> $OFILE
 echo "#BRIDGE=br0"      >> $OFILE
 echo "#DRIVE_IF=virtio" >> $OFILE
-echo "DRIVE_IF=sd"      >> $OFILE
+echo "DRIVE_IF=ide"     >> $OFILE
 echo "MAC=auto"         >> $OFILE
 echo "MEMORY=4G"        >> $OFILE
 echo "#VGA=virtio"      >> $OFILE
