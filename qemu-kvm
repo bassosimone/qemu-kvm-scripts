@@ -5,7 +5,7 @@ prefix=/var/local/qemu-kvm
 
 DAEMONIZE="yes"
 ECHO=""
-OPTIONS="-enable-kvm -runas nobody -chroot $prefix/jail -smp 4"
+OPTIONS="-enable-kvm -runas nobody -chroot $prefix/jail -smp 2"
 QEMU=`which qemu-system-x86_64`
 SUDO=`which sudo`
 
