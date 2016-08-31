@@ -68,16 +68,16 @@ fi
 . $prefix/etc/$1
 
 # Note: add at the beginning so we can override using cmdline
-if [ "$NIC_MODEL" != "user" ]; then
-    if [ "$MAC" = "auto" ]; then
-        MAC=$(echo $1.varanasy.polito.it | md5sum | \
-          sed 's/^\(..\)\(..\)\(..\)\(..\)\(..\).*$/02:\1:\2:\3:\4:\5/')
-    fi
-    OPTIONS="-net nic,model=$NIC_MODEL,macaddr=$MAC $OPTIONS"
-    OPTIONS="-net tap,script=$prefix/bin/ifup.$BRIDGE $OPTIONS"
+if [ "$NETDEV" != "user" ]; then
+    OPTIONS="-netdev tap,script=$prefix/bin/ifup.$BRIDGE $OPTIONS"
 else
-    OPTIONS="-net user $OPTIONS"
+    OPTIONS="-netdev user $OPTIONS"
 fi
+if [ "$MAC" = "auto" ]; then
+    MAC=$(echo $1.varanasy.polito.it | md5sum | \
+      sed 's/^\(..\)\(..\)\(..\)\(..\)\(..\).*$/02:\1:\2:\3:\4:\5/')
+fi
+OPTIONS="-net nic,model=$NIC_MODEL,macaddr=$MAC $OPTIONS"
 OPTIONS="-drive file=$prefix/disk/$1.raw,index=0,media=disk,if=$DRIVE_IF $OPTIONS"
 OPTIONS="-m $MEMORY $OPTIONS"
 OPTIONS="-vga $VGA $OPTIONS"

@@ -9,7 +9,8 @@ if [ -f $OFILE ]; then
     echo "fatal: machine $1 already exists" 1>&2
     exit 1
 fi
-echo "NIC_MODEL=user"   >> $OFILE
+echo "NETDEV=user"      >> $OFILE
+echo "NIC_MODEL=e1000"  >> $OFILE
 echo "#BRIDGE=br0"      >> $OFILE
 echo "#DRIVE_IF=virtio" >> $OFILE
 echo "DRIVE_IF=ide"     >> $OFILE
