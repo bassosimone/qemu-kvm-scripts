@@ -5,7 +5,7 @@ prefix=/var/local/qemu-kvm
 
 DAEMONIZE="yes"
 ECHO=""
-OPTIONS="-enable-kvm -runas nobody -chroot $prefix/jail"
+OPTIONS="-enable-kvm -runas nobody -chroot $prefix/jail -smp 4"
 QEMU=`which qemu-system-x86_64`
 SUDO=`which sudo`
 
@@ -69,16 +69,18 @@ fi
 
 # Note: add at the beginning so we can override using cmdline
 if [ "$NETDEV" != "user" ]; then
-    OPTIONS="-netdev tap,script=$prefix/bin/ifup.$BRIDGE $OPTIONS"
+    OPTIONS="-net tap,script=$prefix/bin/ifup.$BRIDGE $OPTIONS"
 else
-    OPTIONS="-netdev user $OPTIONS"
+    # XXX: find a way to pass a working DNS server... at the moment the
+    # catch is that I need to configure it manually in the box...
+    OPTIONS="-net user $OPTIONS"
 fi
 if [ "$MAC" = "auto" ]; then
     MAC=$(echo $1.varanasy.polito.it | md5sum | \
       sed 's/^\(..\)\(..\)\(..\)\(..\)\(..\).*$/02:\1:\2:\3:\4:\5/')
 fi
 OPTIONS="-net nic,model=$NIC_MODEL,macaddr=$MAC $OPTIONS"
-OPTIONS="-drive file=$prefix/disk/$1.raw,index=0,media=disk,if=$DRIVE_IF $OPTIONS"
+OPTIONS="-drive file=$prefix/disk/$1.raw,index=0,media=disk,if=$DRIVE_IF,format=raw $OPTIONS"
 OPTIONS="-m $MEMORY $OPTIONS"
 OPTIONS="-vga $VGA $OPTIONS"
 if [ "$DAEMONIZE" = "yes" ]; then
